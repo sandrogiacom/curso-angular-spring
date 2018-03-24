@@ -60,7 +60,7 @@ public class TicketController {
 				result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 				return ResponseEntity.badRequest().body(response);
 			}
-			ticket.setStatus(StatusEnum.getStatus("New"));
+			ticket.setStatus(StatusEnum.getStatus("NEW"));
 			ticket.setUser(userFromRequest(request));
 			ticket.setDate(new Date());
 			ticket.setNumber(generateNumber());
@@ -181,16 +181,21 @@ public class TicketController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping(value = "{page}/{count}/{number}/{title}/{status}/{priority}/{assigned}")
+	@GetMapping(value = "{page}/{count}/{number}/{title}/{status}/{priority}")
 	@PreAuthorize("hasAnyRole('CUSTOMER','TECHNICIAN')")
-	public ResponseEntity<Response<Page<Ticket>>> findByParams(HttpServletRequest request, @PathVariable int page,
-			@PathVariable int count, @PathVariable Integer number, @PathVariable String title,
-			@PathVariable String status, @PathVariable String priority, @PathVariable boolean assigned) {
+	public ResponseEntity<Response<Page<Ticket>>> findByParams(HttpServletRequest request, 
+			@PathVariable int page,
+			@PathVariable int count,
+			@PathVariable Integer number,
+			@PathVariable String title,
+			@PathVariable String status,
+			@PathVariable String priority){ //, @PathVariable boolean assigned) {
 
 		title = title.equals("uninformed") ? "" : title;
 		status = status.equals("uninformed") ? "" : status;
 		priority = priority.equals("uninformed") ? "" : priority;
-
+		boolean assigned = false;
+		
 		Response<Page<Ticket>> response = new Response<Page<Ticket>>();
 		Page<Ticket> tickets = null;
 		if (number > 0) {
